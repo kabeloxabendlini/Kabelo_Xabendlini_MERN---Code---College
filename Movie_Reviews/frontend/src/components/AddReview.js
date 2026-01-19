@@ -8,32 +8,48 @@ const AddReview = ({ user }) => {
   const location = useLocation();
   const history = useHistory();
 
-  const currentReview = location.state?.currentReview;
-  const editing = !!currentReview;
+  // Determine edit mode safely
+  const currentReview = location.state?.currentReview || null;
+  const editing = Boolean(currentReview?._id);
 
-  const [review, setReview] = useState(currentReview?.review || "");
+  const [review, setReview] = useState(currentReview?.review ?? "");
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+
+  // Guard: user must be logged in
+  if (!user) {
+    return <p>Please log in to add or edit a review.</p>;
+  }
 
   const saveReview = async () => {
+    if (!review.trim()) {
+      setError("Review cannot be empty.");
+      return;
+    }
+
     try {
       const data = {
-        review,
+        review: review.trim(),
         name: user.name,
         user_id: user.id,
         movie_id: movieId,
       };
 
-      if (editing) data.review_id = currentReview._id;
-
-      if (editing) await MovieDataService.updateReview(data);
-      else await MovieDataService.createReview(data);
+      if (editing) {
+        data.review_id = currentReview._id;
+        await MovieDataService.updateReview(data);
+      } else {
+        await MovieDataService.createReview(data);
+      }
 
       setSubmitted(true);
 
-      // Redirect after 1s
-      setTimeout(() => history.push(`/movies/${movieId}`), 1000);
+      setTimeout(() => {
+        history.push(`/movies/${movieId}`);
+      }, 1000);
     } catch (e) {
-      console.error(e);
+      console.error("Error saving review:", e);
+      setError("Failed to save review. Please try again.");
     }
   };
 
@@ -44,7 +60,9 @@ const AddReview = ({ user }) => {
       ) : (
         <Form>
           <Form.Group className="mb-3">
-            <Form.Label>{editing ? "Edit" : "Create"} Review</Form.Label>
+            <Form.Label>
+              {editing ? "Edit Review" : "Create Review"}
+            </Form.Label>
             <Form.Control
               type="text"
               required
@@ -52,6 +70,9 @@ const AddReview = ({ user }) => {
               onChange={(e) => setReview(e.target.value)}
             />
           </Form.Group>
+
+          {error && <p className="text-danger">{error}</p>}
+
           <Button
             onClick={(e) => {
               e.preventDefault();

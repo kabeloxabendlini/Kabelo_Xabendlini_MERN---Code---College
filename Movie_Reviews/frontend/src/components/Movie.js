@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, Image, ListGroup } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Image,
+  ListGroup,
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import MovieDataService from "../services/movies";
 
+/**
+ * Inline fallback image to avoid broken image errors
+ */
 const FALLBACK_IMAGE =
   "data:image/svg+xml;charset=UTF-8," +
   encodeURIComponent(`
@@ -14,6 +25,9 @@ const FALLBACK_IMAGE =
   `);
 
 const Movie = ({ match, user }) => {
+  /**
+   * ALWAYS initialize arrays as []
+   */
   const [movie, setMovie] = useState({
     id: null,
     title: "",
@@ -23,26 +37,49 @@ const Movie = ({ match, user }) => {
     reviews: [],
   });
 
+  /**
+   * Fetch a movie safely and normalize response data
+   */
   const getMovie = (id) => {
     MovieDataService.get(id)
-      .then((res) => setMovie(res.data))
-      .catch((e) => console.error(e));
+      .then((res) => {
+        const data = res?.data || {};
+
+        setMovie({
+          id: data._id ?? null,
+          title: data.title ?? "",
+          plot: data.plot ?? "",
+          rated: data.rated ?? "",
+          poster: data.poster ?? "",
+          reviews: Array.isArray(data.reviews) ? data.reviews : [],
+        });
+      })
+      .catch((e) => console.error("Error loading movie:", e));
   };
 
   useEffect(() => {
-    getMovie(match.params.id);
-  }, [match.params.id]);
+    if (match?.params?.id) {
+      getMovie(match.params.id);
+    }
+  }, [match]);
 
+  /**
+   * Delete review safely
+   */
   const deleteReview = (reviewId, index) => {
     MovieDataService.deleteReview(reviewId, user.id)
       .then(() => {
-        const updatedReviews = [...movie.reviews];
-        updatedReviews.splice(index, 1);
-        setMovie({ ...movie, reviews: updatedReviews });
+        setMovie((prevMovie) => ({
+          ...prevMovie,
+          reviews: prevMovie.reviews.filter((_, i) => i !== index),
+        }));
       })
-      .catch((e) => console.error(e));
+      .catch((e) => console.error("Error deleting review:", e));
   };
 
+  /**
+   * Handle broken poster URLs
+   */
   const handleImageError = (e) => {
     e.target.onerror = null;
     e.target.src = FALLBACK_IMAGE;
@@ -58,12 +95,16 @@ const Movie = ({ match, user }) => {
             onError={handleImageError}
           />
         </Col>
+
         <Col md={8}>
           <Card>
             <Card.Header as="h5">{movie.title}</Card.Header>
             <Card.Body>
               <Card.Text>{movie.plot}</Card.Text>
-              <Card.Text>Rating: {movie.rated}</Card.Text>
+              <Card.Text>
+                <strong>Rating:</strong> {movie.rated || "Not Rated"}
+              </Card.Text>
+
               {user && (
                 <Link to={`/movies/${match.params.id}/review`}>
                   Add Review
@@ -74,16 +115,18 @@ const Movie = ({ match, user }) => {
 
           <h2 className="mt-4">Reviews</h2>
 
-          {movie.reviews.length ? (
+          {movie.reviews?.length > 0 ? (
             <ListGroup className="mt-3">
               {movie.reviews.map((review, index) => (
-                <ListGroup.Item key={index}>
+                <ListGroup.Item key={review._id || index}>
                   <Card>
                     <Card.Body>
                       <Card.Title>
                         {review.name} reviewed on {review.date}
                       </Card.Title>
+
                       <Card.Text>{review.review}</Card.Text>
+
                       {user && user.id === review.user_id && (
                         <Row>
                           <Col>
@@ -99,7 +142,9 @@ const Movie = ({ match, user }) => {
                           <Col>
                             <Button
                               variant="link"
-                              onClick={() => deleteReview(review._id, index)}
+                              onClick={() =>
+                                deleteReview(review._id, index)
+                              }
                             >
                               Delete
                             </Button>
@@ -121,4 +166,3 @@ const Movie = ({ match, user }) => {
 };
 
 export default Movie;
-
