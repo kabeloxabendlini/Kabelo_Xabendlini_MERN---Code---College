@@ -16,6 +16,17 @@ export default class ReviewsDAO {
     }
   }
 
+  static async getReviewsByMovieId(movieId) {
+    try {
+      return await reviews
+        .find({ movie_id: new ObjectId(movieId) })
+        .toArray();
+    } catch (e) {
+      console.error(`Unable to get reviews: ${e}`);
+      return [];
+    }
+  }
+
   static async addReview(movieId, user, review, date) {
     try {
       const reviewDoc = {
@@ -35,12 +46,10 @@ export default class ReviewsDAO {
 
   static async updateReview(reviewId, userId, review, date) {
     try {
-      const updateResponse = await reviews.updateOne(
+      return await reviews.updateOne(
         { _id: new ObjectId(reviewId), user_id: userId },
         { $set: { review, date } }
       );
-
-      return updateResponse;
     } catch (e) {
       console.error(`Unable to update review: ${e}`);
       return { error: e };
@@ -59,3 +68,4 @@ export default class ReviewsDAO {
     }
   }
 }
+          

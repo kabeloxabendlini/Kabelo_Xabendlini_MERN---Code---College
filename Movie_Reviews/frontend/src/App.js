@@ -12,13 +12,8 @@ import Login from "./components/Login";
 function App() {
   const [user, setUser] = useState(null);
 
-  const login = (user = null) => {
-    setUser(user);
-  };
-
-  const logout = () => {
-    setUser(null);
-  };
+  const login = (user = null) => setUser(user);
+  const logout = () => setUser(null);
 
   return (
     <div className="App">
@@ -46,9 +41,7 @@ function App() {
         {/* Routes */}
         <Switch>
           {/* Movies list */}
-          <Route exact path={["/", "/movies"]}>
-            <MoviesList />
-          </Route>
+          <Route exact path={["/", "/movies"]} component={MoviesList} />
 
           {/* Add or edit review */}
           <Route
