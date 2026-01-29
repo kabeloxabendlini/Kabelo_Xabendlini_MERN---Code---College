@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/v1/movies", moviesRouter)
-app.use("/api/v1/movies/review", moviesRouter)
+app.use("/api/v1/movies/review", moviesRouter) 
 
 // Express 5–safe 404 handler
 app.use((req, res) => {
