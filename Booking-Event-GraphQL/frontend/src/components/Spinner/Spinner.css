@@ -1,30 +1,50 @@
+/* Spinner wrapper (full-page or section-ready) */
 .spinner {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  padding: 2rem;
 }
 
+/* Spinner element */
 .lds-dual-ring {
-  display: inline-block;
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
 }
-.lds-dual-ring:after {
-  content: ' ';
+
+.lds-dual-ring.small {
+  width: 24px;
+  height: 24px;
+}
+
+.spinner.fullscreen {
+  min-height: 100vh;
+}
+
+
+/* Ring */
+.lds-dual-ring::after {
+  content: '';
   display: block;
-  width: 46px;
-  height: 46px;
-  margin: 1px;
+
+  width: 100%;
+  height: 100%;
+
   border-radius: 50%;
-  border: 5px solid #5101d1;
-  border-color: #5101d1 transparent #5101d1 transparent;
-  animation: lds-dual-ring 1.2s linear infinite;
+  border: 4px solid transparent;
+  border-top-color: #5101d1;
+  border-right-color: #667eea;
+
+  animation: spin 0.9s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+
+  /* subtle glow */
+  box-shadow: 0 0 12px rgba(81, 1, 209, 0.35);
 }
-@keyframes lds-dual-ring {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
+
+/* Animation */
+@keyframes spin {
+  to {
     transform: rotate(360deg);
   }
 }

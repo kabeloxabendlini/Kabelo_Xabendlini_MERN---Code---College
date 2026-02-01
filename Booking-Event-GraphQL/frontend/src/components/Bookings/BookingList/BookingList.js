@@ -1,23 +1,32 @@
 import React from 'react';
-
 import './BookingList.css';
 
-const bookingList = props => (
-  <ul className="bookings__list">
-    {props.bookings.map(booking => {
-      return (
-        <li key={booking._id} className="bookings__item">
-          <div className="bookings__item-data">
-            {booking.event.title} -{' '}
-            {new Date(booking.createdAt).toLocaleDateString()}
+const BookingList = ({ bookings }) => {
+  if (!bookings || bookings.length === 0) {
+    return (
+      <div className="booking-empty">
+        <p>No bookings yet.</p>
+        <p>Click "Add Event" to create your first booking!</p>
+      </div>
+    );
+  }
+
+  return (
+    <ul className="booking-list">
+      {bookings.map(booking => (
+        <li key={booking.id} className="booking-list-item">
+          <div className="booking-info">
+            <h2>{booking.title}</h2>
+            <p>{new Date(booking.date).toLocaleString()}</p>
           </div>
-          <div className="bookings__item-actions">
-            <button className="btn" onClick={props.onDelete.bind(this, booking._id)}>Cancel</button>
+          <div className="booking-actions">
+            <button className="btn btn-primary">Edit</button>
+            <button className="btn btn-secondary">Delete</button>
           </div>
         </li>
-      );
-    })}
-  </ul>
-);
+      ))}
+    </ul>
+  );
+};
 
-export default bookingList;
+export default BookingList;

@@ -1,46 +1,125 @@
+// app.js
 const express = require('express');
-const bodyParser = require('body-parser');
-const graphqlHttp = require('express-graphql');
-const mongoose = require('mongoose');
-
-const graphQlSchema = require('./graphql/schema/index');
-const graphQlResolvers = require('./graphql/resolvers/index');
-const isAuth = require('./middleware/is-auth');
+const cors = require('cors');
+const { graphqlHTTP } = require('express-graphql');
+const { buildSchema } = require('graphql');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const app = express();
 
-app.use(bodyParser.json());
+// Allow CORS from frontend
+app.use(cors({
+  origin: 'http://localhost:3000', // React frontend URL
+  credentials: true
+}));
 
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
+app.use(express.json());
+
+// In-memory data
+const users = [];
+const events = [];
+let userIdCounter = 1;
+let eventIdCounter = 1;
+
+// GraphQL schema
+const schema = buildSchema(`
+  type Event {
+    id: ID!
+    title: String!
+    description: String!
+    price: Float!
+    date: String!
   }
-  next();
-});
 
-app.use(isAuth);
+  type User {
+    id: ID!
+    email: String!
+  }
 
+  type AuthData {
+    userId: ID!
+    token: String!
+    tokenExpiration: Int!
+  }
+
+  input UserInput {
+    email: String!
+    password: String!
+  }
+
+  input EventInput {
+    title: String!
+    description: String!
+    price: Float!
+    date: String!
+  }
+
+  type RootQuery {
+    events: [Event!]!
+    login(email: String!, password: String!): AuthData
+  }
+
+  type RootMutation {
+    createUser(userInput: UserInput): User
+    createEvent(eventInput: EventInput): Event
+  }
+
+  schema {
+    query: RootQuery
+    mutation: RootMutation
+  }
+`);
+
+// Resolvers
+const root = {
+  events: () => events,
+
+  login: async ({ email, password }) => {
+    const user = users.find(u => u.email === email);
+    if (!user) throw new Error('User does not exist.');
+
+    const isEqual = await bcrypt.compare(password, user.password);
+    if (!isEqual) throw new Error('Password is incorrect.');
+
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET || 'somesecretkey',
+      { expiresIn: '1h' }
+    );
+
+    return { userId: user.id, token, tokenExpiration: 3600 };
+  },
+
+  createUser: async ({ userInput }) => {
+    if (users.find(u => u.email === userInput.email)) {
+      throw new Error('User already exists');
+    }
+    const hashedPassword = await bcrypt.hash(userInput.password, 12);
+    const newUser = { id: userIdCounter++, email: userInput.email, password: hashedPassword };
+    users.push(newUser);
+    return { id: newUser.id, email: newUser.email };
+  },
+
+  createEvent: ({ eventInput }) => {
+    const newEvent = { id: eventIdCounter++, ...eventInput };
+    events.push(newEvent);
+    return newEvent;
+  }
+};
+
+// GraphQL endpoint
 app.use(
   '/graphql',
-  graphqlHttp({
-    schema: graphQlSchema,
-    rootValue: graphQlResolvers,
-    graphiql: true
+  graphqlHTTP({
+    schema,
+    rootValue: root,
+    graphiql: true,
   })
 );
 
-mongoose
-  .connect(
-    `mongodb+srv://${process.env.MONGO_USER}:${
-      process.env.MONGO_PASSWORD
-    }@cluster0-ntrwp.mongodb.net/${process.env.MONGO_DB}?retryWrites=true`
-  )
-  .then(() => {
-    app.listen(8000);
-  })
-  .catch(err => {
-    console.log(err);
-  });
+// Start server
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+module.exports = app;

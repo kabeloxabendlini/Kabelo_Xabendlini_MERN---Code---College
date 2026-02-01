@@ -1,58 +1,83 @@
+/* ===== Main Navigation ===== */
 .main-navigation {
   position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 3.5rem;
-  background: #5101d1;
-  padding: 0 2rem;
+  inset: 0 0 auto 0;
+  height: 4rem;
+  background: linear-gradient(135deg, #5101d1, #6a2fe3);
+  padding: 0 2.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
+  z-index: 100;
+
+  /* depth */
+  box-shadow: 0 8px 24px rgba(81, 1, 209, 0.25);
 }
 
+/* ===== Logo ===== */
 .main-navigation__logo h1 {
   margin: 0;
-  font-size: 1.5rem;
-  color: #dfcefc;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #f2eaff;
 }
 
+/* ===== Nav Items ===== */
 .main-navigation__items {
-  margin-left: 1.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .main-navigation__items ul {
   display: flex;
+  gap: 1.25rem;
   list-style: none;
   padding: 0;
   margin: 0;
   align-items: center;
 }
 
-.main-navigation__items li {
-  margin: 0 1rem;
-}
-
+/* ===== Nav Links / Buttons ===== */
 .main-navigation__items a,
 .main-navigation__items button {
   text-decoration: none;
-  color: white;
-  padding: 0.25rem 0.5rem;
+  color: #ffffff;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
   border: none;
   font: inherit;
   background: transparent;
   cursor: pointer;
-  vertical-align: middle;
-  margin: 0;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.15s ease;
 }
 
+/* Hover */
 .main-navigation__items a:hover,
-.main-navigation__items a:active,
+.main-navigation__items button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Active / Selected */
 .main-navigation__items a.active,
-.main-navigation__items button:hover,
+.main-navigation__items a:active,
 .main-navigation__items button:active {
   background: #ffffff;
   color: #5101d1;
-  border-radius: 5px;
+}
+
+/* Accessibility focus */
+.main-navigation__items a:focus-visible,
+.main-navigation__items button:focus-visible {
+  outline: 2px solid #dfcefc;
+  outline-offset: 3px;
+}
+.main-navigation__items a:focus,
+.main-navigation__items button:focus {
+  outline: none;
 }

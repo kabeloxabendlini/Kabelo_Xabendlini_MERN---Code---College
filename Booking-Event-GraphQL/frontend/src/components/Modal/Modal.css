@@ -1,37 +1,123 @@
+/* Modal container */
 .modal {
-  width: 90%;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  width: 95%;
+  max-width: 600px; /* bigger than before */
+  max-height: 80vh; /* limit height to 80% of viewport */
+  background: #ffffff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2),
+              0 10px 20px rgba(102, 126, 234, 0.25);
   position: fixed;
-  top: 20vh;
-  left: 5%;
+  top: 10vh; /* a little higher to give space */
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 100;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp 0.5s ease;
+  padding: 0; /* remove padding here, we handle padding in sections */
 }
 
+/* Header */
 .modal__header {
-  padding: 1rem;
-  background: #5101d1;
+  padding: 1.25rem 2rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  flex-shrink: 0; /* don't shrink */
 }
 
-.modal__header h1 {
-  margin: 0;
-  font-size: 1.25rem;
-}
-
+/* Content */
 .modal__content {
-  padding: 1rem;
+  padding: 2rem;
+  flex: 1; /* grow to fill space */
+  overflow-y: auto; /* scroll if content is too tall */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* spacing between input fields */
 }
 
+.modal__content input,
+.modal__content textarea {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #d0d0e5;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.modal__content input:focus,
+.modal__content textarea:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+}
+
+/* Actions */
 .modal__actions {
   display: flex;
   justify-content: flex-end;
-  padding: 1rem;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  flex-shrink: 0; /* always visible, never shrinks */
+  background: #f9f9f9;
+  border-top: 1px solid #e0e0e0;
 }
 
-@media (min-width: 768px) {
-  .modal {
-    width: 30rem;
-    left: calc((100% - 30rem) / 2);
+.modal__actions button {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.modal__actions .btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.modal__actions .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.35);
+}
+
+.modal__actions .btn-secondary {
+  background: #f5f6fa;
+  color: #333;
+}
+
+.modal__actions .btn-secondary:hover {
+  background: #e9ebf5;
+}
+
+/* Fade Up Animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal {
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    width: 95%;
+  }
+}
+

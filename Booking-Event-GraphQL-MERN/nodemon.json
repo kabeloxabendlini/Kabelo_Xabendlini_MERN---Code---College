@@ -1,0 +1,7 @@
+{
+    "env": {
+        "MONGO_USER": "kabelox385@gmail.com",
+        "MONGO_PASSWORD": "1MrF6wriEskSncj1mbKkMdQKsj",
+        "MONGO_DB": "booking-events-react-mern"
+    }
+}

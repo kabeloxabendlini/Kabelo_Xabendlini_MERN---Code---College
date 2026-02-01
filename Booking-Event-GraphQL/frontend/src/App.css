@@ -1,3 +1,94 @@
 .main-content {
   margin: 4rem 2.5rem;
 }
+
+/* Clock & Calendar Container */
+.clock-calendar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem; /* space between clock and calendar */
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1),
+              0 8px 15px rgba(102, 126, 234, 0.15);
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+/* Clock */
+.clock {
+  font-size: 4rem; /* bigger clock */
+  font-weight: 700;
+  color: #5101d1;
+  letter-spacing: 2px;
+}
+
+/* AM/PM smaller */
+.clock span {
+  font-size: 1.5rem;
+  vertical-align: super;
+}
+
+/* Calendar */
+.calendar {
+  width: 100%;
+  max-width: 450px;
+  border-collapse: collapse;
+}
+
+.calendar th,
+.calendar td {
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.25rem; /* bigger text */
+  border-radius: 10px;
+  transition: background 0.25s ease;
+}
+
+.calendar th {
+  background: #667eea;
+  color: #fff;
+  font-size: 1.4rem;
+}
+
+.calendar td {
+  background: #f5f6fa;
+  cursor: pointer;
+}
+
+.calendar td:hover {
+  background: #e0e0f5;
+}
+
+/* Highlight today */
+.calendar .today {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .clock {
+    font-size: 3rem;
+  }
+  .calendar th,
+  .calendar td {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .clock {
+    font-size: 2.5rem;
+  }
+  .calendar th,
+  .calendar td {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+}

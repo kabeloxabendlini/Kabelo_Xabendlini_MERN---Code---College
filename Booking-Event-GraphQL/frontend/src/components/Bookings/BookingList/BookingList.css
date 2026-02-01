@@ -1,16 +1,95 @@
-.bookings__list {
+/* Container */
+.booking-list {
+  width: 45rem;
+  max-width: 95%;
+  margin: 2rem auto;
   list-style: none;
-  margin: 0 auto;
   padding: 0;
-  width: 40rem;
-  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.bookings__item {
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  border: 1px solid #5101d1;
+/* Single booking card */
+.booking-list-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.booking-list-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 35px rgba(0,0,0,0.12);
+}
+
+/* Booking info */
+.booking-info h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+  color: #5101d1;
+}
+
+.booking-info p {
+  margin: 0;
+  font-size: 1rem;
+  color: #7c7c7c;
+}
+
+/* Booking actions */
+.booking-actions button {
+  margin-left: 0.75rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.booking-actions .btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+}
+
+.booking-actions .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+}
+
+.booking-actions .btn-secondary {
+  background: #f5f6fa;
+  color: #333;
+  border: none;
+}
+
+.booking-actions .btn-secondary:hover {
+  background: #e9ebf5;
+}
+
+/* Empty state */
+.booking-empty {
+  width: 40rem;
+  max-width: 90%;
+  margin: 3rem auto;
+  padding: 2rem;
+  text-align: center;
+  background: #f9f9fb;
+  border-radius: 16px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.05);
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.booking-empty p {
+  margin: 0.5rem 0;
+}
+.booking-empty strong {
+  color: #5101d1;
+}
+
