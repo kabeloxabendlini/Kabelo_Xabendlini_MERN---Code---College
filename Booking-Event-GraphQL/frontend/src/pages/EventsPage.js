@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-
 import Modal from '../components/Modal/Modal';
 import Backdrop from '../components/Backdrop/Backdrop';
 import EventList from '../components/Events/EventList/EventList';
 import Spinner from '../components/Spinner/Spinner';
 import AuthContext from '../context/auth-context';
-import './Events.css';
+import './EventsPage.css';
 
 class EventsPage extends Component {
   state = {
@@ -14,8 +13,8 @@ class EventsPage extends Component {
     isLoading: false,
     selectedEvent: null
   };
-  isActive = true;
 
+  isActive = true;
   static contextType = AuthContext;
 
   constructor(props) {
@@ -34,182 +33,153 @@ class EventsPage extends Component {
     this.setState({ creating: true });
   };
 
-  modalConfirmHandler = () => {
+  modalConfirmHandler = async () => {
     this.setState({ creating: false });
-    const title = this.titleElRef.current.value;
+
+    const title = this.titleElRef.current.value.trim();
     const price = +this.priceElRef.current.value;
     const date = this.dateElRef.current.value;
-    const description = this.descriptionElRef.current.value;
+    const description = this.descriptionElRef.current.value.trim();
 
-    if (
-      title.trim().length === 0 ||
-      price <= 0 ||
-      date.trim().length === 0 ||
-      description.trim().length === 0
-    ) {
-      return;
-    }
-
-    const event = { title, price, date, description };
-    console.log(event);
+    if (!title || !price || !date || !description) return;
 
     const requestBody = {
       query: `
-          mutation CreateEvent($title: String!, $desc: String!, $price: Float!, $date: String!) {
-            createEvent(eventInput: {title: $title, description: $desc, price: $price, date: $date}) {
-              _id
-              title
-              description
-              date
-              price
-            }
+        mutation CreateEvent($title: String!, $desc: String!, $price: Float!, $date: String!) {
+          createEvent(eventInput: {title: $title, description: $desc, price: $price, date: $date}) {
+            id
+            title
+            description
+            price
+            date
           }
-        `,
-        variables: {
-          title: title,
-          desc: description,
-          price: price,
-          date: date
         }
+      `,
+      variables: { title, desc: description, price, date }
     };
 
-    const token = this.context.token;
-
-    fetch('http://localhost:8000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed!');
+    try {
+      const res = await fetch('http://localhost:8000/graphql', {
+        method: 'POST',
+        body: JSON.stringify(requestBody),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.context.token
         }
-        return res.json();
-      })
-      .then(resData => {
-        this.setState(prevState => {
-          const updatedEvents = [...prevState.events];
-          updatedEvents.push({
-            _id: resData.data.createEvent._id,
-            title: resData.data.createEvent.title,
-            description: resData.data.createEvent.description,
-            date: resData.data.createEvent.date,
-            price: resData.data.createEvent.price,
-            creator: {
-              _id: this.context.userId
-            }
-          });
-          return { events: updatedEvents };
-        });
-      })
-      .catch(err => {
-        console.log(err);
       });
+
+      const resData = await res.json();
+
+      if (resData.errors) {
+        console.error(resData.errors);
+        alert(resData.errors[0].message);
+        return;
+      }
+
+      const newEvent = resData.data.createEvent;
+
+      this.setState(prevState => ({
+        events: [...prevState.events, newEvent]
+      }));
+    } catch (err) {
+      console.error(err);
+      alert('Something went wrong. Please try again.');
+    }
   };
 
   modalCancelHandler = () => {
     this.setState({ creating: false, selectedEvent: null });
   };
 
-  fetchEvents() {
+  fetchEvents = async () => {
     this.setState({ isLoading: true });
+
     const requestBody = {
       query: `
-          query {
-            events {
-              _id
-              title
-              description
-              date
-              price
-              creator {
-                _id
-                email
-              }
-            }
+        query {
+          events {
+            id
+            title
+            description
+            date
+            price
           }
-        `
+        }
+      `
     };
 
-    fetch('http://localhost:8000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed!');
-        }
-        return res.json();
-      })
-      .then(resData => {
-        const events = resData.data.events;
-        if (this.isActive) {
-          this.setState({ events: events, isLoading: false });
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        if (this.isActive) {
-          this.setState({ isLoading: false });
-        }
+    try {
+      const res = await fetch('http://localhost:8000/graphql', {
+        method: 'POST',
+        body: JSON.stringify(requestBody),
+        headers: { 'Content-Type': 'application/json' }
       });
-  }
 
-  showDetailHandler = eventId => {
-    this.setState(prevState => {
-      const selectedEvent = prevState.events.find(e => e._id === eventId);
-      return { selectedEvent: selectedEvent };
-    });
+      const resData = await res.json();
+
+      if (resData.errors) {
+        console.error('Events fetch failed:', resData.errors);
+        this.setState({ isLoading: false });
+        return;
+      }
+
+      if (this.isActive) {
+        this.setState({ events: resData.data.events, isLoading: false });
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      if (this.isActive) this.setState({ isLoading: false });
+    }
   };
 
-  bookEventHandler = () => {
-    if (!this.context.token) {
+  showDetailHandler = eventId => {
+    this.setState(prevState => ({
+      selectedEvent: prevState.events.find(e => e.id === eventId)
+    }));
+  };
+
+  bookEventHandler = async () => {
+    if (!this.context.token || !this.state.selectedEvent) {
       this.setState({ selectedEvent: null });
       return;
     }
-    console.log(this.state.selectedEvent)
+
     const requestBody = {
       query: `
-          mutation BookEvent($id: ID!) {
-            bookEvent(eventId: $id) {
-              _id
-             createdAt
-             updatedAt
-            }
+        mutation BookEvent($id: ID!) {
+          bookEvent(eventId: $id) {
+            id
+            createdAt
+            updatedAt
           }
-        `,
-        variables: {
-          id: this.state.selectedEvent._id
         }
+      `,
+      variables: { id: this.state.selectedEvent.id }
     };
 
-    fetch('http://localhost:8000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.context.token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed!');
+    try {
+      const res = await fetch('http://localhost:8000/graphql', {
+        method: 'POST',
+        body: JSON.stringify(requestBody),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.context.token
         }
-        return res.json();
-      })
-      .then(resData => {
-        console.log(resData);
-        this.setState({ selectedEvent: null });
-      })
-      .catch(err => {
-        console.log(err);
       });
+
+      const resData = await res.json();
+
+      if (resData.errors) {
+        console.error('Booking failed:', resData.errors);
+        alert(resData.errors[0].message);
+        return;
+      }
+
+      this.setState({ selectedEvent: null });
+    } catch (err) {
+      console.error('Fetch error:', err);
+      alert('Something went wrong. Please try again.');
+    }
   };
 
   componentWillUnmount() {
@@ -244,11 +214,7 @@ class EventsPage extends Component {
               </div>
               <div className="form-control">
                 <label htmlFor="description">Description</label>
-                <textarea
-                  id="description"
-                  rows="4"
-                  ref={this.descriptionElRef}
-                />
+                <textarea id="description" rows="4" ref={this.descriptionElRef} />
               </div>
             </form>
           </Modal>
@@ -264,7 +230,7 @@ class EventsPage extends Component {
           >
             <h1>{this.state.selectedEvent.title}</h1>
             <h2>
-              ${this.state.selectedEvent.price} -{' '}
+              ${this.state.selectedEvent.price} –{' '}
               {new Date(this.state.selectedEvent.date).toLocaleDateString()}
             </h2>
             <p>{this.state.selectedEvent.description}</p>
@@ -283,7 +249,6 @@ class EventsPage extends Component {
         ) : (
           <EventList
             events={this.state.events}
-            authUserId={this.context.userId}
             onViewDetail={this.showDetailHandler}
           />
         )}
@@ -293,3 +258,6 @@ class EventsPage extends Component {
 }
 
 export default EventsPage;
+
+
+            

@@ -1,25 +1,27 @@
-import React from 'react';
-
+import React from "react";
 import EventItem from './EventItem/EventItem';
-import './EventList.css';
+import "./EventList.css";
 
-const eventList = props => {
-  const events = props.events.map(event => {
-    return (
-      <EventItem
-        key={event._id}
-        eventId={event._id}
-        title={event.title}
-        price={event.price}
-        date={event.date}
-        userId={props.authUserId}
-        creatorId={event.creator._id}
-        onDetail={props.onViewDetail}
-      />
-    );
-  });
+const EventList = ({ events, onViewDetail }) => {
+  if (!events || events.length === 0) {
+    return <p style={{ textAlign: 'center' }}>No events found.</p>;
+  }
 
-  return <ul className="event__list">{events}</ul>;
+  return (
+    <ul className="event__list">
+      {events.map(event => (
+        <EventItem
+          key={event.id}
+          eventId={event.id}
+          title={event.title}
+          price={event.price}
+          date={event.date}
+          onDetail={() => onViewDetail(event.id)}
+        />
+      ))}
+    </ul>
+  );
 };
 
-export default eventList;
+export default EventList;
+

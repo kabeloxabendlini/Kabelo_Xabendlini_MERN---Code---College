@@ -1,0 +1,72 @@
+/* ----- CREATE EVENT BUTTON AREA ----- */
+.events-control {
+  width: 90%;
+  max-width: 42rem;
+  margin: 2.5rem auto 2rem;
+  text-align: center;
+}
+
+.events-control button {
+  cursor: pointer;
+  padding: 0.75rem 1.6rem;
+  background: linear-gradient(135deg, #28a745, #218838);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.events-control button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+}
+
+.events-control button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* ----- EVENTS LIST CONTAINER ----- */
+.event-list {
+  list-style: none;
+  padding: 0;
+  width: 90%;
+  max-width: 42rem;
+  margin: 0 auto 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.event__item {
+  padding: 1.4rem 1.6rem;
+  background: #ffffff;
+  border-radius: 8px;
+  border-left: 5px solid #28a745;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+}
+
+.event__item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.event__item h2 {
+  margin: 0 0 0.5rem;
+  color: #333;
+}
+
+.event__item p {
+  margin: 0.25rem 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+.event__item .event__actions {
+  margin-top: 1rem;
+  text-align: right;
+}

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import Spinner from '../components/Spinner/Spinner';
 import AuthContext from '../context/auth-context';
 import BookingList from '../components/Bookings/BookingList/BookingList';
@@ -19,103 +18,98 @@ class BookingsPage extends Component {
     this.fetchBookings();
   }
 
-  fetchBookings = () => {
+  fetchBookings = async () => {
     this.setState({ isLoading: true });
     const requestBody = {
       query: `
-          query {
-            bookings {
-              _id
-             createdAt
-             event {
-               _id
-               title
-               date
-               price
-             }
+        query {
+          bookings {
+            id
+            createdAt
+            event {
+              id
+              title
+              date
+              price
             }
           }
-        `
+        }
+      `
     };
 
-    fetch('http://localhost:8000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.context.token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed!');
+    try {
+      const res = await fetch('http://localhost:8000/graphql', {
+        method: 'POST',
+        body: JSON.stringify(requestBody),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.context.token
         }
-        return res.json();
-      })
-      .then(resData => {
-        const bookings = resData.data.bookings;
-        this.setState({ bookings: bookings, isLoading: false });
-      })
-      .catch(err => {
-        console.log(err);
-        this.setState({ isLoading: false });
       });
+
+      const resData = await res.json();
+
+      if (resData.errors) {
+        console.error('Bookings fetch failed:', resData.errors);
+        this.setState({ isLoading: false });
+        return;
+      }
+
+      this.setState({ bookings: resData.data.bookings, isLoading: false });
+    } catch (err) {
+      console.error(err);
+      this.setState({ isLoading: false });
+    }
   };
 
-  deleteBookingHandler = bookingId => {
+  deleteBookingHandler = async bookingId => {
     this.setState({ isLoading: true });
+
     const requestBody = {
       query: `
-          mutation CancelBooking($id: ID!) {
-            cancelBooking(bookingId: $id) {
-            _id
-             title
-            }
+        mutation CancelBooking($id: ID!) {
+          cancelBooking(bookingId: $id) {
+            id
+            title
           }
-        `,
-      variables: {
-        id: bookingId
-      }
+        }
+      `,
+      variables: { id: bookingId }
     };
 
-    fetch('http://localhost:8000/graphql', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.context.token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed!');
+    try {
+      const res = await fetch('http://localhost:8000/graphql', {
+        method: 'POST',
+        body: JSON.stringify(requestBody),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.context.token
         }
-        return res.json();
-      })
-      .then(resData => {
-        this.setState(prevState => {
-          const updatedBookings = prevState.bookings.filter(booking => {
-            return booking._id !== bookingId;
-          });
-          return { bookings: updatedBookings, isLoading: false };
-        });
-      })
-      .catch(err => {
-        console.log(err);
-        this.setState({ isLoading: false });
       });
+
+      const resData = await res.json();
+
+      if (resData.errors) {
+        console.error('Cancel booking failed:', resData.errors);
+        this.setState({ isLoading: false });
+        return;
+      }
+
+      const updatedBookings = this.state.bookings.filter(b => b.id !== bookingId);
+      this.setState({ bookings: updatedBookings, isLoading: false });
+    } catch (err) {
+      console.error(err);
+      this.setState({ isLoading: false });
+    }
   };
 
   changeOutputTypeHandler = outputType => {
-    if (outputType === 'list') {
-      this.setState({ outputType: 'list' });
-    } else {
-      this.setState({ outputType: 'chart' });
-    }
+    this.setState({ outputType });
   };
 
   render() {
     let content = <Spinner />;
+
     if (!this.state.isLoading) {
       content = (
         <React.Fragment>
@@ -136,9 +130,9 @@ class BookingsPage extends Component {
         </React.Fragment>
       );
     }
+
     return <React.Fragment>{content}</React.Fragment>;
   }
 }
 
 export default BookingsPage;
-

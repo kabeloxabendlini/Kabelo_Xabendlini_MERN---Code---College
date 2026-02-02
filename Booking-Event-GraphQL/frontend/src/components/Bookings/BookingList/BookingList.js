@@ -1,27 +1,26 @@
-import React from 'react';
-import './BookingList.css';
+import React from "react";
+import "./BookingList.css"; // optional CSS file
 
-const BookingList = ({ bookings }) => {
+const BookingList = ({ bookings, onDelete }) => {
   if (!bookings || bookings.length === 0) {
-    return (
-      <div className="booking-empty">
-        <p>No bookings yet.</p>
-        <p>Click "Add Event" to create your first booking!</p>
-      </div>
-    );
+    return <p style={{ textAlign: "center" }}>No bookings yet.</p>;
   }
 
   return (
-    <ul className="booking-list">
-      {bookings.map(booking => (
-        <li key={booking.id} className="booking-list-item">
-          <div className="booking-info">
-            <h2>{booking.title}</h2>
-            <p>{new Date(booking.date).toLocaleString()}</p>
+    <ul className="bookings__list">
+      {bookings.map((booking) => (
+        <li key={booking.id} className="bookings__list-item">
+          <div>
+            <h2>{booking.event.title}</h2>
+            <p>
+              Price: ${booking.event.price} | Date:{" "}
+              {new Date(booking.event.date).toLocaleDateString()}
+            </p>
           </div>
-          <div className="booking-actions">
-            <button className="btn btn-primary">Edit</button>
-            <button className="btn btn-secondary">Delete</button>
+          <div>
+            <button className="btn" onClick={() => onDelete(booking.id)}>
+              Cancel
+            </button>
           </div>
         </li>
       ))}
@@ -30,3 +29,4 @@ const BookingList = ({ bookings }) => {
 };
 
 export default BookingList;
+

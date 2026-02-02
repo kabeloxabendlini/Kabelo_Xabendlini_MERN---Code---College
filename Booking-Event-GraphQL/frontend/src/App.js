@@ -1,71 +1,74 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { Component } from 'react';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate
+} from 'react-router-dom';
 
 import AuthPage from './pages/AuthPage';
 import BookingsPage from './pages/BookingsPage';
 import EventsPage from './pages/EventsPage';
 import MainNavigation from './components/Navigation/MainNavigation';
 import AuthContext from './context/auth-context';
-import PrivateRoute from './components/Routes/PrivateRoute';
-import PublicRoute from './components/Routes/PublicRoute';
 
 import './App.css';
 
-const App = () => {
-  const [token, setToken] = useState(null);
-  const [userId, setUserId] = useState(null);
-
-  const login = (token, userId) => {
-    setToken(token);
-    setUserId(userId);
+class App extends Component {
+  state = {
+    token: null,
+    userId: null
   };
 
-  const logout = () => {
-    setToken(null);
-    setUserId(null);
+  login = (token, userId, tokenExpiration) => {
+    this.setState({ token: token, userId: userId });
   };
 
-  const isLoggedIn = !!token;
+  logout = () => {
+    this.setState({ token: null, userId: null });
+  };
 
-  return (
-    <AuthContext.Provider value={{ token, userId, login, logout }}>
+  render() {
+    return (
       <BrowserRouter>
-        <MainNavigation />
-        <main className="main-content">
-          <Routes>
-            {/* Public Auth Page */}
-            <Route
-              path="/auth"
-              element={
-                <PublicRoute>
-                  <AuthPage />
-                </PublicRoute>
-              }
-            />
+        <AuthContext.Provider
+          value={{
+            token: this.state.token,
+            userId: this.state.userId,
+            login: this.login,
+            logout: this.logout
+          }}
+        >
+          <MainNavigation />
+          <main className="main-content">
+            <Routes>
+              {this.state.token && (
+                <Route path="/" element={<Navigate to="/events" replace />} />
+              )}
 
-            {/* Public Events Page */}
-            <Route path="/events" element={<EventsPage />} />
+              {!this.state.token && (
+                <Route path="/auth" element={<AuthPage />} />
+              )}
 
-            {/* Protected Bookings Page */}
-            <Route
-              path="/bookings"
-              element={
-                <PrivateRoute>
-                  <BookingsPage />
-                </PrivateRoute>
-              }
-            />
+              {this.state.token && (
+                <Route path="/auth" element={<Navigate to="/events" replace />} />
+              )}
 
-            {/* Catch-all Redirect */}
-            <Route
-              path="*"
-              element={<Navigate to={isLoggedIn ? '/events' : '/auth'} replace />}
-            />
-          </Routes>
-        </main>
+              <Route path="/events" element={<EventsPage />} />
+
+              {this.state.token && (
+                <Route path="/bookings" element={<BookingsPage />} />
+              )}
+
+              {!this.state.token && (
+                <Route path="*" element={<Navigate to="/auth" replace />} />
+              )}
+            </Routes>
+          </main>
+        </AuthContext.Provider>
       </BrowserRouter>
-    </AuthContext.Provider>
-  );
-};
+    );
+  }
+}
 
 export default App;

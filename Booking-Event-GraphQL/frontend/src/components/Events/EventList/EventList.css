@@ -1,51 +1,35 @@
-.event__list {
-  width: 42rem;
-  max-width: 94%;
-  margin: 3.5rem auto;
-  padding: 1.75rem 1.5rem;
-
+.event-list {
   list-style: none;
-  border-radius: 18px;
-
-  background: #ffffff;
-
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.08),
-    0 6px 14px rgba(102, 126, 234, 0.08);
-
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-
-  animation: fadeIn 0.35s ease;
+  padding: 0;
 }
 
-/* Smooth entrance */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Nice mobile spacing */
-@media (max-width: 480px) {
-  .event__list {
-    margin: 2.5rem auto;
-    padding: 1.25rem;
-    border-radius: 14px;
-  }
-}
-.event__list-item {
-  padding: 1rem;
-  border-radius: 12px;
-  background: #f9f9f9;
-
+.event-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.event-info h3 {
+  margin: 0;
+}
+
+.event-actions button {
+  margin-left: 0.5rem;
+}
+
+.btn-small {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+}
+.btn-danger:hover {
+  background-color: #c0392b;
 }

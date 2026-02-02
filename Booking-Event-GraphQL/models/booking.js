@@ -6,11 +6,13 @@ const bookingSchema = new Schema(
   {
     event: {
       type: Schema.Types.ObjectId,
-      ref: 'Event'
+      ref: 'Event',
+      required: true
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
+      required: true
     }
   },
   { timestamps: true }

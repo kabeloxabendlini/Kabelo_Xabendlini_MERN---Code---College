@@ -1,25 +1,26 @@
-import React from 'react';
-
+import React, { Component } from 'react';
 import './EventItem.css';
+import AuthContext from '../../../../context/auth-context';
 
-const eventItem = props => (
-  <li key={props.eventId} className="events__list-item">
-    <div>
-      <h1>{props.title}</h1>
-      <h2>
-        ${props.price} - {new Date(props.date).toLocaleDateString()}
-      </h2>
-    </div>
-    <div>
-      {props.userId === props.creatorId ? (
-        <p>Your the owner of this event.</p>
-      ) : (
-        <button className="btn" onClick={props.onDetail.bind(this, props.eventId)}>
-          View Details
-        </button>
-      )}
-    </div>
-  </li>
-);
+class EventItem extends Component {
+  static contextType = AuthContext;
 
-export default eventItem;
+  render() {
+    return (
+      <li className="events__list-item">
+        <div>
+          <h1>{this.props.title}</h1>
+          <h2>
+            R{this.props.price} –{' '}
+            {new Date(this.props.date).toLocaleDateString()}
+          </h2>
+        </div>
+        <div>
+          <button onClick={this.props.onDetail}>View Details</button>
+        </div>
+      </li>
+    );
+  }
+}
+
+export default EventItem;

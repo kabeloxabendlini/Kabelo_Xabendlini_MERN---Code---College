@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import AuthContext from '../context/auth-context';
-import './Auth.css';
+import './AuthPage.css';
 
 class AuthPage extends Component {
   state = {
