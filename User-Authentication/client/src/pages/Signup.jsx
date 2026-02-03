@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/api";
+import axios from "axios";
 import "./Signup.css";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const navigate = useNavigate(); // for redirection
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -19,20 +19,14 @@ const Signup = () => {
     setSuccess("");
 
     try {
-      const res = await api.post("/signup", form); // fixed URL
+      const res = await axios.post("http://localhost:5000/api/auth/signup", form);
       setSuccess(res.data.message || "Signup successful!");
       setForm({ email: "", password: "" });
 
-      // Redirect to login page after 1.5 seconds
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
+      // Redirect to login
+      setTimeout(() => navigate("/login"), 1000);
     } catch (err) {
-      if (err.response) {
-        setError(err.response.data.message || "Signup failed");
-      } else {
-        setError("Network error. Try again.");
-      }
+      setError(err.response?.data?.message || "Signup failed");
     }
   };
 
@@ -62,7 +56,10 @@ const Signup = () => {
           <button type="submit">Sign Up</button>
         </form>
         <p>
-          Already have an account? <span onClick={() => navigate("/login")}>Login</span>
+          Already have an account?{" "}
+          <span className="link" onClick={() => navigate("/login")}>
+            Login
+          </span>
         </p>
       </div>
     </div>
