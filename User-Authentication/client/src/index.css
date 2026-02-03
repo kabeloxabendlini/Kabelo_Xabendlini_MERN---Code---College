@@ -128,3 +128,66 @@ span a {
     font-size: 1.5rem;
   }
 }
+
+/* GLOBAL THEMES */
+
+body.light {
+  background: #f4f6f8;
+  color: #222;
+}
+
+body.dark {
+  background: #121212;
+  color: #f1f1f1;
+}
+
+body.ocean {
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+  color: white;
+}
+
+body.sunset {
+  background: linear-gradient(135deg, #ff512f, #dd2476);
+  color: white;
+}
+
+/* Cards adapt */
+body.dark .page-card,
+body.ocean .page-card,
+body.sunset .page-card {
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+}
+/* GLOBAL THEMES */
+
+body.light {
+  background: #f4f6f8;
+  color: #222;
+}
+
+body.dark {
+  background: #121212;
+  color: #f1f1f1;
+}
+
+body.ocean {
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+  color: white;
+}
+
+body.sunset {
+  background: linear-gradient(135deg, #ff512f, #dd2476);
+  color: white;
+}
+
+/* Cards adapt */
+body.dark .page-card,
+body.ocean .page-card,
+body.sunset .page-card {
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+}
+body.light .page-card {
+  background: #fff;
+  color: #222;
+}

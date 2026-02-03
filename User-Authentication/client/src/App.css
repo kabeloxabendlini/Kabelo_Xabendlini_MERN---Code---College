@@ -1,32 +1,98 @@
+/* ========== BASE APP STYLES ========== */
+
 .App {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* ========== BODY THEMES ========== */
+
+body {
+  background-color: #f4f6f8;
+  color: #222;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+body.dark {
+  background-color: #121212;
+  color: #f1f1f1;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* ========== CARDS (Auth, Dashboard, Settings) ========== */
+
+.auth-card,
+.dashboard-card,
+.page-card {
+  background: #ffffff;
+  color: #222;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.App-link {
-  color: #61dafb;
+body.dark .auth-card,
+body.dark .dashboard-card,
+body.dark .page-card {
+  background: #1e1e1e;
+  color: #f1f1f1;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
+
+/* ========== INPUTS ========== */
+
+input {
+  background: #ffffff;
+  color: #222;
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  border-radius: 6px;
+  width: 100%;
+  margin-bottom: 1rem;
+  transition: background 0.3s, color 0.3s, border 0.3s;
+}
+
+input::placeholder {
+  color: #888;
+}
+
+body.dark input {
+  background: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444;
+}
+
+/* ========== BUTTONS ========== */
+
+button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+body.dark button {
+  background: #3a3a3a;
+  color: #fff;
+}
+
+/* ========== LINKS / ACTION TEXT ========== */
+
+span {
+  color: #4f46e5;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+body.dark span {
+  color: #90cdf4;
+}
+
+/* ========== OPTIONAL: LOGO ANIMATION ========== */
 
 @keyframes App-logo-spin {
   from {
@@ -36,3 +102,91 @@
     transform: rotate(360deg);
   }
 }
+
+/* GLOBAL THEMES */
+
+body.light {
+  background: #f4f6f8;
+  color: #222;
+}
+
+body.dark {
+  background: #121212;
+  color: #f1f1f1;
+}
+
+body.ocean {
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+  color: white;
+}
+
+body.sunset {
+  background: linear-gradient(135deg, #ff512f, #dd2476);
+  color: white;
+}
+
+/* Cards adapt */
+body.dark .page-card,
+body.ocean .page-card,
+body.sunset .page-card {
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+}
+/* GLOBAL THEMES */
+
+body.light {
+  background: #f4f6f8;
+  color: #222;
+}
+
+body.dark {
+  background: #121212;
+  color: #f1f1f1;
+}
+
+body.ocean {
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+  color: white;
+}
+
+body.sunset {
+  background: linear-gradient(135deg, #ff512f, #dd2476);
+  color: white;
+}
+
+/* Cards adapt */
+body.dark .page-card,
+body.ocean .page-card,
+body.sunset .page-card {
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+}
+body.light .page-card {
+  background: #fff;
+  color: #222;
+}
+
+/* PAGE CONTAINER THEMES */
+
+body.light .page-container {
+  background: #f4f6f8;
+}
+
+body.dark .page-container {
+  background: #121212;
+}
+
+body.ocean .page-container {
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+}
+
+body.sunset .page-container {
+  background: linear-gradient(135deg, #ff512f, #dd2476);
+}
+
+body.sunset .page-card {
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+}
+
+/* BUTTON THEMES */
