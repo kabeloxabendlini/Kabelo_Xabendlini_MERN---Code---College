@@ -1,85 +1,70 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import api from "../utils/api";
+import "./Login.css";
 
 const Login = () => {
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
-  const [inputValue, setInputValue] = useState({ email: "", password: "" });
-  const { email, password } = inputValue;
 
-  const handleOnChange = (e) => {
-    const { name, value } = e.target;
-    setInputValue({ ...inputValue, [name]: value });
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
-
-  const handleError = (err) => toast.error(err, { position: "bottom-left" });
-  const handleSuccess = (msg) =>
-    toast.success(msg, { position: "bottom-left" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
+
     try {
-      const { data } = await axios.post(
-        "http://localhost:3000/login",
-        inputValue,
-        { withCredentials: true }
-      );
+      const res = await api.post("/login", form); // fixed URL
+      setSuccess(res.data.message || "Login successful!");
+      setForm({ email: "", password: "" });
 
-      const { success, message } = data;
-      if (success) {
-        handleSuccess(message);
-        setTimeout(() => navigate("/"), 1000);
+      // Redirect to dashboard or home
+      setTimeout(() => {
+        navigate("/dashboard"); // change to your route
+      }, 1000);
+    } catch (err) {
+      if (err.response) {
+        setError(err.response.data.message || "Invalid credentials");
       } else {
-        handleError(message);
+        setError("Network error. Try again.");
       }
-    } catch (error) {
-      console.error(error);
     }
-
-    setInputValue({ email: "", password: "" });
   };
 
   return (
-    <div className="form_container">
-      <h2>Login to Your Account</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email</label>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>Login</h2>
+        {error && <p className="error">{error}</p>}
+        {success && <p className="success">{success}</p>}
+        <form onSubmit={handleSubmit}>
           <input
             type="email"
-            id="email"
             name="email"
-            value={email}
-            placeholder="Enter your email"
-            autoComplete="email"
-            onChange={handleOnChange}
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
             required
           />
-        </div>
-
-        <div>
-          <label htmlFor="password">Password</label>
           <input
             type="password"
-            id="password"
             name="password"
-            value={password}
-            placeholder="Enter your password"
-            autoComplete="current-password"
-            onChange={handleOnChange}
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
             required
           />
-        </div>
-
-        <button type="submit">Login</button>
-
+          <button type="submit">Login</button>
+        </form>
         <p>
-          Don’t have an account? <Link to="/signup">Signup</Link>
+          Don't have an account? <span onClick={() => navigate("/signup")}>Sign Up</span>
         </p>
-      </form>
-
-      <ToastContainer />
+      </div>
     </div>
   );
 };
