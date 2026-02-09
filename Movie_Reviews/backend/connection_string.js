@@ -1,25 +1,38 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://kabeloxabendlini385_db_user:<db_password>@cleanblogcluster.3dcqxws.mongodb.net/?appName=CleanBlogCluster";
+// Import MongoClient and ServerApiVersion from the MongoDB driver
+import { MongoClient, ServerApiVersion } from "mongodb";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// MongoDB Atlas connection URI
+// Replace <db_password> with your actual database password
+const uri = "mongodb+srv://kabeloxabendlini385_db_user:gSMfHTQU9wFILRsb@cleanblogcluster.3dcqxws.mongodb.net/?appName=CleanBlogCluster";
+
+// Create a MongoClient instance with Stable API options
 const client = new MongoClient(uri, {
   serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
+    version: ServerApiVersion.v1,   // Use MongoDB Stable API v1
+    strict: true,                   // Enforce strict API rules
+    deprecationErrors: true,        // Throw errors for deprecated commands
   }
 });
 
+// Async function to test the connection
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
+    // Connect to MongoDB Atlas
     await client.connect();
-    // Send a ping to confirm a successful connection
+
+    // Send a ping command to confirm connection is successful
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log("✅ Pinged your deployment. Successfully connected to MongoDB!");
+
+  } catch (err) {
+    // Log any errors
+    console.error("❌ Connection failed:", err);
+
   } finally {
-    // Ensures that the client will close when you finish/error
+    // Ensure the client is closed in all cases
     await client.close();
   }
 }
-run().catch(console.dir);
+
+// Run the connection test
+run();

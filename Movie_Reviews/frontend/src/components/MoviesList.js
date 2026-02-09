@@ -3,6 +3,9 @@ import { Row, Col, Card, Form, Button, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import MovieDataService from "../services/movies";
 
+/**
+ * Inline fallback image to prevent broken image URLs
+ */
 const FALLBACK_IMAGE =
   "data:image/svg+xml;charset=UTF-8," +
   encodeURIComponent(`
@@ -14,16 +17,25 @@ const FALLBACK_IMAGE =
   `);
 
 const MoviesList = () => {
-  const [movies, setMovies] = useState([]);
-  const [ratings, setRatings] = useState(["All Ratings"]);
-  const [searchTitle, setSearchTitle] = useState("");
-  const [searchRating, setSearchRating] = useState("All Ratings");
+  // -----------------------------
+  // State
+  // -----------------------------
+  const [movies, setMovies] = useState([]);           // All movies fetched from backend
+  const [ratings, setRatings] = useState(["All Ratings"]); // List of ratings for filter dropdown
+  const [searchTitle, setSearchTitle] = useState(""); // Title search input
+  const [searchRating, setSearchRating] = useState("All Ratings"); // Selected rating filter
 
+  // -----------------------------
+  // Lifecycle
+  // -----------------------------
   useEffect(() => {
-    retrieveMovies();
-    retrieveRatings();
+    retrieveMovies();  // Load all movies initially
+    retrieveRatings(); // Load distinct ratings for filter dropdown
   }, []);
 
+  // -----------------------------
+  // API calls
+  // -----------------------------
   const retrieveMovies = () => {
     MovieDataService.getAll()
       .then((res) => setMovies(res.data.movies))
@@ -32,7 +44,7 @@ const MoviesList = () => {
 
   const retrieveRatings = () => {
     MovieDataService.getRatings()
-      .then((res) => setRatings(["All Ratings", ...res.data]))
+      .then((res) => setRatings(["All Ratings", ...res.data])) // Add default "All Ratings"
       .catch((e) => console.error(e));
   };
 
@@ -45,23 +57,30 @@ const MoviesList = () => {
   const findByTitle = () => find(searchTitle, "title");
 
   const findByRating = () => {
-    if (searchRating === "All Ratings") retrieveMovies();
+    if (searchRating === "All Ratings") retrieveMovies(); // Reset filter
     else find(searchRating, "rated");
   };
 
+  /**
+   * Handle broken poster URLs
+   */
   const handleImageError = (e) => {
     e.target.onerror = null;
     e.target.src = FALLBACK_IMAGE;
   };
 
+  // -----------------------------
+  // JSX Rendering
+  // -----------------------------
   return (
     <Container>
       <h2>Movies</h2>
 
-      {/* Search Form */}
+      {/* Search / Filter Form */}
       <Form className="mb-3">
         <Row>
           <Col>
+            {/* Search by title */}
             <Form.Control
               type="text"
               placeholder="Search by title"
@@ -74,6 +93,7 @@ const MoviesList = () => {
           </Col>
 
           <Col>
+            {/* Filter by rating */}
             <Form.Select
               value={searchRating}
               onChange={(e) => setSearchRating(e.target.value)}

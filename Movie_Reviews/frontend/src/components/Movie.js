@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import MovieDataService from "../services/movies";
 
 /**
- * Inline fallback image to avoid broken image errors
+ * Inline fallback image to prevent broken image display
  */
 const FALLBACK_IMAGE =
   "data:image/svg+xml;charset=UTF-8," +
@@ -26,7 +26,8 @@ const FALLBACK_IMAGE =
 
 const Movie = ({ match, user }) => {
   /**
-   * ALWAYS initialize arrays as []
+   * Movie state
+   * Always initialize arrays/objects to avoid undefined errors
    */
   const [movie, setMovie] = useState({
     id: null,
@@ -38,7 +39,7 @@ const Movie = ({ match, user }) => {
   });
 
   /**
-   * Fetch a movie safely and normalize response data
+   * Fetch a movie from the backend and normalize response data
    */
   const getMovie = (id) => {
     MovieDataService.get(id)
@@ -57,6 +58,7 @@ const Movie = ({ match, user }) => {
       .catch((e) => console.error("Error loading movie:", e));
   };
 
+  // Fetch movie when component mounts or match.params.id changes
   useEffect(() => {
     if (match?.params?.id) {
       getMovie(match.params.id);
@@ -64,7 +66,8 @@ const Movie = ({ match, user }) => {
   }, [match]);
 
   /**
-   * Delete review safely
+   * Delete a review
+   * Filters out the deleted review from local state
    */
   const deleteReview = (reviewId, index) => {
     MovieDataService.deleteReview(reviewId, user.id)
@@ -78,16 +81,17 @@ const Movie = ({ match, user }) => {
   };
 
   /**
-   * Handle broken poster URLs
+   * Fallback for broken image URLs
    */
   const handleImageError = (e) => {
-    e.target.onerror = null;
+    e.target.onerror = null; // Prevent infinite loop
     e.target.src = FALLBACK_IMAGE;
   };
 
   return (
     <Container className="mt-4">
       <Row>
+        {/* Movie poster */}
         <Col md={4}>
           <Image
             src={movie.poster || FALLBACK_IMAGE}
@@ -96,6 +100,7 @@ const Movie = ({ match, user }) => {
           />
         </Col>
 
+        {/* Movie details */}
         <Col md={8}>
           <Card>
             <Card.Header as="h5">{movie.title}</Card.Header>
@@ -105,6 +110,7 @@ const Movie = ({ match, user }) => {
                 <strong>Rating:</strong> {movie.rated || "Not Rated"}
               </Card.Text>
 
+              {/* Show Add Review link if user is logged in */}
               {user && (
                 <Link to={`/movies/${match.params.id}/review`}>
                   Add Review
@@ -115,6 +121,7 @@ const Movie = ({ match, user }) => {
 
           <h2 className="mt-4">Reviews</h2>
 
+          {/* List of reviews */}
           {movie.reviews?.length > 0 ? (
             <ListGroup className="mt-3">
               {movie.reviews.map((review, index) => (
@@ -127,6 +134,7 @@ const Movie = ({ match, user }) => {
 
                       <Card.Text>{review.review}</Card.Text>
 
+                      {/* Show Edit/Delete only for reviews by the current user */}
                       {user && user.id === review.user_id && (
                         <Row>
                           <Col>

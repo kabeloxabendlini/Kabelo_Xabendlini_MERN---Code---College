@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Switch, Route, Link } from "react-router-dom";
+import { Switch, Route, Link } from "react-router-dom"; // Routing
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Navbar, Nav, Container } from "react-bootstrap";
 
@@ -10,23 +10,32 @@ import AddReview from "./components/AddReview";
 import Login from "./components/Login";
 
 function App() {
+  // -----------------------------
+  // State: current logged-in user
+  // -----------------------------
   const [user, setUser] = useState(null);
 
-  const login = (user = null) => setUser(user);
-  const logout = () => setUser(null);
+  // Functions to log in/out
+  const login = (user = null) => setUser(user); // Set user state
+  const logout = () => setUser(null);           // Clear user state
 
   return (
     <div className="App">
       <Container>
-        {/* Navbar */}
+        {/* ===========================
+            Navbar
+        =========================== */}
         <Navbar bg="light" expand="lg" className="mb-4">
           <Navbar.Brand>Movie Reviews</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
+              {/* Link to Movies list */}
               <Nav.Link as={Link} to="/movies">
                 Movies
               </Nav.Link>
+
+              {/* Conditional Login/Logout */}
               {user ? (
                 <Nav.Link onClick={logout}>Logout User</Nav.Link>
               ) : (
@@ -38,18 +47,20 @@ function App() {
           </Navbar.Collapse>
         </Navbar>
 
-        {/* Routes */}
+        {/* ===========================
+            Routes
+        =========================== */}
         <Switch>
-          {/* Movies list */}
+          {/* Movies list page */}
           <Route exact path={["/", "/movies"]} component={MoviesList} />
 
-          {/* Add or edit review */}
+          {/* Add or edit review page */}
           <Route
             path="/movies/:id/review"
             render={(props) => <AddReview {...props} user={user} />}
           />
 
-          {/* Movie detail page */}
+          {/* Movie detail page with reviews */}
           <Route
             path="/movies/:id"
             render={(props) => <Movie {...props} user={user} />}
