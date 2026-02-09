@@ -1,9 +1,11 @@
-// Import MongoClient and ServerApiVersion from the MongoDB driver
+// Load environment variables
+import 'dotenv/config';
 import { MongoClient, ServerApiVersion } from "mongodb";
 
 // MongoDB Atlas connection URI
 // Replace <db_password> with your actual database password
-const uri = "mongodb+srv://kabeloxabendlini385_db_user:gSMfHTQU9wFILRsb@cleanblogcluster.3dcqxws.mongodb.net/?appName=CleanBlogCluster";
+const uri = mongodb+srv://<username>:<password>@cleanblogcluster.3dcqxws.mongodb.net/?appName=CleanBlogCluster
+
 
 // Create a MongoClient instance with Stable API options
 const client = new MongoClient(uri, {
