@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-// Import required modules
-=======
 // Load environment variables
 import 'dotenv/config';
->>>>>>> 27377828799ba055ae0079e5831a3438428b5335
-import { MongoClient, ServerApiVersion } from "mongodb";
-import dotenv from "dotenv";
-:
-<<<<<<< HEAD
-// Load environment variables from .env file
-dotenv.config();
-=======
-// MongoDB Atlas connection URI
-// Replace <db_password> with your actual database password
-const uri = mongodb+srv://<username>:<password>@cleanblogcluster.3dcqxws.mongodb.net/?appName=CleanBlogCluster
 
->>>>>>> 27377828799ba055ae0079e5831a3438428b5335
+// Import required modules
+import { MongoClient, ServerApiVersion } from "mongodb";
 
 // Get MongoDB URI from environment variables
 const uri = process.env.MONGO_URI;
