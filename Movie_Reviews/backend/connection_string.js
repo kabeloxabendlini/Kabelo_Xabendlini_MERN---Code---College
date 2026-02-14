@@ -1,38 +1,42 @@
-// Import MongoClient and ServerApiVersion from the MongoDB driver
+// Import required modules
 import { MongoClient, ServerApiVersion } from "mongodb";
+import dotenv from "dotenv";
 
-// MongoDB Atlas connection URI
-// Replace <db_password> with your actual database password
-const uri = "mongodb+srv://kabeloxabendlini385_db_user:gSMfHTQU9wFILRsb@cleanblogcluster.3dcqxws.mongodb.net/?appName=CleanBlogCluster";
+// Load environment variables from .env file
+dotenv.config();
 
-// Create a MongoClient instance with Stable API options
+// Get MongoDB URI from environment variables
+const uri = process.env.MONGO_URI;
+
+if (!uri) {
+  console.error("❌ Please set your MONGO_URI in a .env file");
+  process.exit(1);
+}
+
+// Create MongoClient instance
 const client = new MongoClient(uri, {
   serverApi: {
-    version: ServerApiVersion.v1,   // Use MongoDB Stable API v1
-    strict: true,                   // Enforce strict API rules
-    deprecationErrors: true,        // Throw errors for deprecated commands
-  }
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
 });
 
 // Async function to test the connection
 async function run() {
   try {
-    // Connect to MongoDB Atlas
     await client.connect();
 
-    // Send a ping command to confirm connection is successful
+    // Ping the database to confirm connection
     await client.db("admin").command({ ping: 1 });
-    console.log("✅ Pinged your deployment. Successfully connected to MongoDB!");
 
+    console.log("✅ Successfully connected to MongoDB Atlas!");
   } catch (err) {
-    // Log any errors
     console.error("❌ Connection failed:", err);
-
   } finally {
-    // Ensure the client is closed in all cases
     await client.close();
   }
 }
 
-// Run the connection test
+// Run connection test
 run();
