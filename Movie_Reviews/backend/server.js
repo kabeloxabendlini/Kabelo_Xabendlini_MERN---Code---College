@@ -1,44 +1,39 @@
-// Import necessary modules
-import express from "express";       // Express framework
-import cors from "cors";             // CORS middleware to allow cross-origin requests
-import moviesRouter from "./api/movies.route.js"; // Import router for movies & reviews
+import dotenv from "dotenv";
+import { MongoClient } from "mongodb";
+import app from "./app.js";
+import MoviesDAO from "./dao/moviesDAO.js";
+import ReviewsDAO from "./dao/reviewsDAO.js";
 
-// Initialize Express app
-const app = express();
+dotenv.config();
 
-// -----------------------------
-// Middleware
-// -----------------------------
+const PORT = process.env.PORT || 5000;
+const DB_URI = process.env.MOVIEREVIEWS_DB_URI;
 
-// Enable Cross-Origin Resource Sharing (CORS) for all routes
-app.use(cors());
+if (!DB_URI) {
+  console.error("❌ MOVIEREVIEWS_DB_URI is missing in .env");
+  process.exit(1);
+}
 
-// Parse incoming JSON requests automatically
-app.use(express.json());
+async function startServer() {
+  try {
+    // Connect to MongoDB
+    const client = new MongoClient(DB_URI);
+    await client.connect();
+    console.log("✅ Connected to MongoDB Atlas");
 
-// -----------------------------
-// Routes
-// -----------------------------
+    // Inject DB connection into DAOs
+    await MoviesDAO.injectDB(client);
+    await ReviewsDAO.injectDB(client);
 
-// Mount moviesRouter for movie-related routes
-// Base URL: /api/v1/movies
-app.use("/api/v1/movies", moviesRouter);
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to connect to MongoDB", error);
+    process.exit(1);
+  }
+}
 
-// ⚠️ NOTE: This line mounts the same moviesRouter for /api/v1/movies/review
-// This is redundant because reviews routes are already included in moviesRouter
-// Ideally, you only need:
-// app.use("/api/v1/movies", moviesRouter)
-app.use("/api/v1/movies/review", moviesRouter);
-
-// -----------------------------
-// 404 Handler
-// -----------------------------
-
-// Catch-all for unmatched routes (Express 5 safe)
-// Returns JSON error instead of default HTML 404 page
-app.use((req, res) => {
-  res.status(404).json({ error: "not found" });
-});
-
-// Export the Express app
-export default app;
+// Call the async function
+startServer();
